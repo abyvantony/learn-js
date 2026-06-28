@@ -1,0 +1,144 @@
+# Level 4: Arrays and objects: the data structures you'll use every day
+
+**Track:** JavaScript · **Level:** 4/12 · **Difficulty:** `beginner-plus`
+
+📚 **Today's lesson** — published 2026-06-28
+
+## TL;DR
+
+Objects are the workhorse of JavaScript — they map keys to values. Arrays are ordered lists. Almost everything in JS is one or the other. Master their methods and you master 80% of everyday JS.
+
+## Real-world analogies
+
+- An object is a dictionary: look up a word (key), get a definition (value). An array is a numbered list: position 0, 1, 2...
+- JSON (JavaScript Object Notation) is the universal data format. When data travels between systems, it's almost always JSON. JavaScript objects and JSON look almost identical — that's not a coincidence.
+
+## Key concepts
+
+### `Object literal`
+
+`{ key: value, key2: value2 }` — the most common way to create objects.
+
+### `Array methods`
+
+`map`, `filter`, `reduce`, `find`, `some`, `every`, `forEach`, `sort` — these are your daily tools. Most loops can be replaced with one of these.
+
+### `Mutation vs immutability`
+
+Some methods CHANGE the original array (mutate: `push`, `splice`, `sort`). Others return a NEW array (don't mutate: `map`, `filter`, `slice`). In modern JS, prefer non-mutating.
+
+### `Spread for copies`
+
+`const copy = [...arr]` or `const copy = { ...obj }` creates a shallow copy. The original is unchanged.
+
+## Code with comments
+
+Every line has a comment. Read it slowly.
+
+```
+// === Object basics ===
+const user = {
+    name: "Aby",
+    age: 30,
+    "favorite color": "blue",  // Quoted keys for spaces/special chars
+    address: {
+        city: "Trivandrum",
+        country: "India"
+    },
+    greet() {
+        return `Hi, I'm ${this.name}`;
+    }
+};
+
+// Access
+user.name;                    // "Aby"
+user["favorite color"];       // "blue" (bracket notation for tricky keys)
+user.address.city;            // "Trivandrum"
+user.greet();                 // "Hi, I'm Aby"
+
+// Optional chaining (ES2020)
+user?.address?.zip;           // undefined (zip doesn't exist, no error)
+
+// Modify
+user.age = 31;
+user.email = "aby@example.com";  // add new property
+delete user.email;               // remove property
+
+// === Arrays ===
+const fruits = ["apple", "banana", "cherry"];
+fruits[0];      // "apple"
+fruits.length;  // 3
+fruits.push("date");  // adds to end, returns new length
+fruits.pop();        // removes from end, returns it
+fruits.unshift("a"); // adds to start
+fruits.shift();      // removes from start
+
+// === The big three: map, filter, reduce ===
+const numbers = [1, 2, 3, 4, 5];
+
+// map: transform each element, return new array
+const doubled = numbers.map(n => n * 2);
+// [2, 4, 6, 8, 10]
+
+// filter: keep elements that pass a test
+const evens = numbers.filter(n => n % 2 === 0);
+// [2, 4]
+
+// reduce: combine all elements into one value
+const sum = numbers.reduce((total, n) => total + n, 0);
+// 15
+
+// === Other useful array methods ===
+numbers.find(n => n > 3);        // 4 (first match)
+numbers.findIndex(n => n > 3);   // 3 (index of first match)
+numbers.some(n => n > 4);        // true (at least one)
+numbers.every(n => n > 0);       // true (all)
+numbers.includes(3);             // true (does it contain 3?)
+numbers.sort((a, b) => a - b);   // sort ascending (default is alphabetical!)
+numbers.reverse();               // reverse the array
+
+// Chaining array methods
+const result = numbers
+    .filter(n => n > 2)
+    .map(n => n * 2)
+    .reduce((sum, n) => sum + n, 0);
+// (3+4+5) * 2 = 24, then sum = 6+8+10 = 24
+
+// === Destructuring objects ===
+const { name, age } = user;
+const { name: userName, age: userAge } = user;  // rename
+const { name, ...rest } = user;  // rest = { age, address, greet }
+
+// === Object spread and rest ===
+const defaults = { theme: "light", lang: "en" };
+const userPrefs = { lang: "fr" };
+const config = { ...defaults, ...userPrefs };  // { theme: "light", lang: "fr" }
+
+// === JSON ===
+const json = JSON.stringify(user);  // object → string
+const parsed = JSON.parse(json);    // string → object
+
+// === Useful Object methods ===
+Object.keys(user);     // ["name", "age", ...]
+Object.values(user);   // ["Aby", 30, ...]
+Object.entries(user);  // [["name", "Aby"], ["age", 30], ...]
+Object.fromEntries([["a", 1], ["b", 2]]);  // { a: 1, b: 2 }
+```
+
+## Try it yourself
+
+Given an array of users `[{name, age, active}, ...]`, write a one-liner that returns the names of all active users older than 18, sorted alphabetically. Use `filter`, `map`, and `sort`.
+
+## Common pitfalls
+
+- ⚠️ `sort()` sorts alphabetically by default, even for numbers. Use `sort((a, b) => a - b)` for numbers.
+- ⚠️ Mutating an array when you meant to copy. `const arr2 = arr` is a REFERENCE, not a copy. Use `[...arr]` or `arr.slice()`.
+- ⚠️ Forgetting the initial value in `reduce`. `[1,2,3].reduce((a,b) => a + b)` without the `0` initial value throws on empty arrays.
+
+## What's next?
+
+**Level 5: The DOM: making web pages come alive** — coming in the next drop.
+
+---
+
+_Generated by Hermes · Aby's learning cron · Track: JavaScript · Level 4_
