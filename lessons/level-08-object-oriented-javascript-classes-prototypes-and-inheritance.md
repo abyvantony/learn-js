@@ -1,0 +1,176 @@
+# Level 8: Object-oriented JavaScript: classes, prototypes, and inheritance
+
+**Track:** JavaScript · **Level:** 8/12 · **Difficulty:** `intermediate`
+
+📚 **Today's lesson** — published 2026-06-30
+
+## TL;DR
+
+JavaScript has a unique inheritance model based on prototypes. ES6 added `class` syntax that hides the complexity. Master both — most code uses `class`, but understanding prototypes helps debug tricky issues.
+
+## Real-world analogies
+
+- A prototype is a parent. Every object has a parent (its prototype) from which it inherits properties. When you call a method, JavaScript walks up the prototype chain to find it.
+- `class` is a recipe. `new Recipe()` bakes a cake. The cake has all the methods and properties defined in the recipe.
+
+## Key concepts
+
+### `Prototype chain`
+
+Every object has a hidden `__proto__` link to another object. Property lookups walk up the chain until they find the property (or hit `null`).
+
+### ``class` syntax`
+
+Sugar over prototypes. `class Foo { method() {} }` creates a function `Foo` with `Foo.prototype.method`.
+
+### `Inheritance`
+
+`class Admin extends User {}` makes Admin inherit from User. Use `super()` to call the parent's constructor.
+
+### `Getters and setters`
+
+`get` and `set` keywords let you define computed properties that run code on access. Like Python's `@property`.
+
+## Code with comments
+
+Every line has a comment. Read it slowly.
+
+```
+// === The old way: prototypes ===
+function User(name) {
+    this.name = name;
+}
+User.prototype.greet = function() {
+    return `Hello, ${this.name}`;
+};
+
+const aby = new User("Aby");
+aby.greet();  // "Hello, Aby"
+
+// === The modern way: class ===
+class User {
+    // Constructor runs on `new User(...)`
+    constructor(name, email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    // Methods go on the prototype
+    greet() {
+        return `Hello, ${this.name}`;
+    }
+
+    // Static method: called on the class, not instances
+    static createGuest() {
+        return new User("Guest", "");
+    }
+
+    // Getter: access like a property, but it's computed
+    get displayName() {
+        return this.name.toUpperCase();
+    }
+
+    // Setter: assignment runs code
+    set displayName(value) {
+        this.name = value.toLowerCase();
+    }
+}
+
+const aby = new User("Aby", "aby@example.com");
+aby.greet();              // "Hello, Aby"
+aby.displayName;          // "ABY" (calls getter)
+aby.displayName = "ABBY"; // Calls setter, name becomes "abby"
+
+const guest = User.createGuest();  // Static method
+
+// === Inheritance ===
+class Admin extends User {
+    constructor(name, email, role) {
+        super(name, email);  // Call parent's constructor
+        this.role = role;
+    }
+
+    // Override parent method
+    greet() {
+        return `Hi, I'm admin ${this.name}`;
+    }
+
+    banUser(user) {
+        return `${this.name} banned ${user.name}`;
+    }
+}
+
+const admin = new Admin("Boss", "boss@example.com", "super");
+admin.greet();            // "Hi, I'm admin Boss"
+admin.banUser(aby);       // "Boss banned Aby"
+
+// instanceof check
+admin instanceof Admin;   // true
+admin instanceof User;    // true (Admin extends User)
+
+// === Private fields (ES2022) ===
+class BankAccount {
+    #balance;  // Private field (truly private, not just convention)
+
+    constructor(initial) {
+        this.#balance = initial;
+    }
+
+    deposit(amount) {
+        if (amount <= 0) throw new Error("Must be positive");
+        this.#balance += amount;
+    }
+
+    get balance() {
+        return this.#balance;
+    }
+}
+
+const account = new BankAccount(100);
+account.deposit(50);
+account.balance;       // 150
+account.#balance;      // SyntaxError (truly private)
+
+// === Object.create: prototypal inheritance ===
+const animal = {
+    speak() { return `${this.name} makes a sound`; }
+};
+
+const dog = Object.create(animal);
+dog.name = "Rex";
+dog.speak();  // "Rex makes a sound"
+
+// === Mixin pattern (multiple inheritance workaround) ===
+const Swimmer = {
+    swim() { return `${this.name} swims`; }
+};
+const Flyer = {
+    fly() { return `${this.name} flies`; }
+};
+
+class Duck { }
+Object.assign(Duck.prototype, Swimmer, Flyer);
+
+const donald = new Duck();
+donald.name = "Donald";
+donald.swim();  // "Donald swims"
+donald.fly();   // "Donald flies"
+```
+
+## Try it yourself
+
+Build a `Shape` class with a `color` property and an `area()` method. Create `Circle` and `Rectangle` subclasses that override `area()`. Test with `instanceof` and overridden methods.
+
+## Common pitfalls
+
+- ⚠️ Forgetting `super()` in subclass constructors. Results in `this` being undefined.
+- ⚠️ Arrow functions as class methods. They don't have their own `this`, so they can't access instance properties.
+- ⚠️ Trying to access private fields outside the class. `#balance` is truly private, not just convention. Use getters instead.
+
+## What's next?
+
+**Level 9: Error handling, testing, and debugging** — coming in the next drop.
+
+---
+
+_Generated by Hermes · Aby's learning cron · Track: JavaScript · Level 8_
